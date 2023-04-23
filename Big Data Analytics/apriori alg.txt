@@ -8,16 +8,16 @@ Groceries
 summary(Groceries)
 class(Groceries)
 
-rules = apriori(Groceries, parameter = list(supp = 0.02, conf = 0.2))
+arules = apriori(Groceries, parameter = list(supp = 0.02, conf = 0.2))
 summary (rules)
 
 inspect(rules[1:10])
 
-rules::itemFrequencyPlot(Groceries, topN = 20,
- col = brewer.pal(8, 'Pastel2'),
- main = 'Relative Item Frequency Plot',
- type = "relative",
- ylab = "Item Frequency (Relative)")
+arules::itemFrequencyPlot(Groceries, topN = 20,
+  col = brewer.pal(8, 'Pastel2'),
+  main = 'Relative Item Frequency Plot',
+  type = "relative",
+  ylab = "Item Frequency (Relative)")
 itemsets = apriori(Groceries, parameter = list(minlen=2, maxlen=2,support=0.02, target="frequent
 itemsets"))
 
