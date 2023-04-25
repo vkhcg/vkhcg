@@ -1,0 +1,145 @@
+R1(ISP) 
+Router>enable 
+Router#conf t 
+Router(config)#hostname ISP 
+ISP(config)#interface Loopback0 
+ISP(config-if)#ip address 192.168.100.1 255.255.255.0
+ ISP(config-if)#exit
+ ISP(config)#interface Serial1/0 
+ISP(config-if)#ip address 192.168.1.5 255.255.255.252
+ ISP(config-if)#no shutdown 
+ISP(config-if)#exit 
+ISP(config)#interface Serial1/1 
+ISP(config-if)#ip address 192.168.1.1 255.255.255.252 
+ISP(config-if)#no shutdown
+ ISP(config-if)#exit 
+ISP(config)#router bgp 200
+ ISP(config-router)#network 192.168.100.0 
+ISP(config-router)#neighbor 192.168.1.6 remote-as 64512 
+ISP(config-router)#neighbor 192.168.1.2 remote-as 64512
+ ISP(config-router)#exit 
+ISP#sh ip bgp
+ISP#ping 172.16.1.1 source 192.168.100.1 
+ISP#ping 172.16.32.1 source 192.168.100.1 
+ISP#ping 172.16.1.2 source 192.
+ISP(config)#router bgp 200 
+ISP(config-router)#network 192.168.1.0 mask 255.255.255.252 
+ISP(config-router)#network 192.168.1.4 mask 255.255.255.252 
+ISP(config-router)#exit 
+ISP#sh ip bgp
+  ISP#sh ip bgp 
+ISP#ping 172.16.1.1 
+ISP#ping 172.16.1.2 
+ ISP#traceroute 172.16.1.1
+ ISP#traceroute 172.16.1.2 
+
+
+
+ R2 (SanJose1)
+ Router>enable Router#conf t 
+Router(config)#hostname SanJose1
+ SanJose1(config)#interface Loopback0
+ SanJose1(config-if)#ip address 172.16.64.1 255.255.255.0 
+SanJose1(config-if)#ip address 172.16.64.1 255.255.255.0
+ SanJose1(config-if)#exit 
+SanJose1(config)#interface Serial1/0
+ SanJose1(config-if)#ip address 192.168.1.6 255.255.255.252 
+SanJose1(config-if)#no shutdown 
+SanJose1(config-if)#exit
+ SanJose1(config)#interface Serial1/1
+ SanJose1(config-if)#ip address 172.16.1.1 255.255.255.0 
+SanJose1(config-if)#no shutdown 
+SanJose1(config-if)#exit 
+SanJose1(config)#router eigrp 64512 
+SanJose1(config-router)#network 172.16.0.0 
+SanJose1(config-router)#no auto-summary 
+SanJose1(config-router)#exit 
+SanJose1(config)#router bgp 64512
+ SanJose1(config-router)#neighbor 172.16.32.1 remote-as 64512
+ SanJose1(config-router)#neighbor 172.16.32.1 update-source loopback0
+ SanJose1(config-router)#exit 
+SanJose1(config)#ip route 172.16.0.0 255.255.0.0 null 0 
+SanJose1(config)#router bgp 64512 
+SanJose1(config-router)#network 172.16.0.0
+ SanJose1(config-router)#neighbor 192.168.1.5 remote-as 200 
+SanJose1(config-router)#exit 
+SanJose1(config)#router bgp 64512
+ SanJose1(config-router)#neighbor 172.16.32.1 next-hop-self
+ SanJose1(config-router)#exit 
+SanJose1#sh ip bgp
+ SanJose1(config)#route-map PRIMARY_T1_IN permit 10 
+SanJose1(config-route-map)#set local-preference 160
+ SanJose1(config-route-map)#exit 
+SanJose1(config)#router bgp 64512 
+SanJose1(config-router)#neighbor 192.168.1.5 route-map PRIMARY_T1_IN in
+ SanJose1(config-router)#exit
+ SanJose1#clear ip bgp * soft
+ SanJose1#sh ip bgp
+SanJose1(config)#route-map PRIMARY_T1_MED_OUT permit 10 
+SanJose1(config-route-map)#set Metric 50 
+SanJose1(config-route-map)#exit 
+SanJose1(config)#router bgp 64512 
+SanJose1(config-router)#neighbor 192.168.1.5 route-map PRIMARY_T1_MED_OUT out SanJose1(config-router)#exit 
+SanJose1(config)#exit
+SanJose1#clear ip bgp * soft 
+SanJose1#sh ip bgp 
+SanJose1#sh ip route 
+SanJose1(config)#ip default-network 192.168.100.0 
+SanJose1(config)#end 
+SanJose1#sh ip route
+SanJose1#ping 192.168.1.2 
+SanJose1#traceroute 192.168.1.2 
+SanJose1#ping 192.168.1.1 
+SanJose1#traceroute 192.168.1.1 
+ 
+
+R3 (SanJose2) 
+Router>en 
+Router#conf t 
+Router(config)#hostname SanJose2 
+SanJose2(config)#interface Loopback0
+ SanJose2(config-if)#ip address 172.16.32.1 255.255.255.0
+ SanJose2(config-if)#exit 
+SanJose2(config)#interface Serial1/1
+ SanJose2(config-if)#ip address 192.168.1.2 255.255.255.252 
+SanJose2(config-if)#no shutdown
+ SanJose2(config-if)#exit 
+SanJose2(config)#interface Serial1/0 
+SanJose2(config-if)#ip address 172.16.1.2 255.255.255.0 
+SanJose2(config-if)#no shutdown 
+SanJose2(config-if)#exit 
+SanJose2(config)#router eigrp 64512
+ SanJose2(config-router)#network 172.16.0.0
+ SanJose2(config-router)#no auto-summary 
+SanJose2(config-router)#exit 
+SanJose2(config)#router bgp 64512
+ SanJose2(config-router)#neighbor 172.16.64.1 remote-as 64512 
+SanJose2(config-router)#neighbor 172.16.64.1 update-source loopback0
+ SanJose2(config-router)#exit
+ SanJose2(config)#ip route 172.16.0.0 255.255.0.0 null 0
+ SanJose2(config)#router bgp 64512 
+SanJose2(config-router)#network 172.16.0.0
+ SanJose2(config-router)#neighbor 192.168.1.1 remote-as 200 
+SanJose2(config-router)#exit 
+SanJose2#sh ip bgp summary 
+SanJose2#sh ip route
+SanJose2#sh ip bgp 
+ SanJose2(config-router)#neighbor 172.16.64.1 next-hop-self 
+SanJose2(config-router)#exit 
+SanJose2#sh ip bgp 
+SanJose2(config)#route-map SECONDARY_T1_IN permit 10 
+SanJose2(config-route-map)#set local-preference 125
+ SanJose2(config-route-map)#exit 
+SanJose2(config)#router bgp 64512
+ SanJose2(config-router)#neighbor 192.168.1.1 route-map SECONDARY_T1_IN in
+ SanJose2(config-router)#exit 
+SanJose2#clear ip bgp * soft 
+SanJose2#sh ip bgp 
+SanJose2(config)#route-map SECONDARY_T1_MED_OUT permit 10 
+SanJose2(config-route-map)#set Metric 75
+ SanJose2(config-route-map)#exit 
+SanJose2(config)#router bgp 64512
+ SanJose2(config-router)#$2.168.1.1 route-map SECONDARY_T1_MED_OUT out
+ SanJose2(config-router)#end 
+SanJose2#clear ip bgp * soft
+ SanJose2#sh ip bgp 

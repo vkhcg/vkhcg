@@ -1,0 +1,176 @@
+R1 Router>en
+ Router#conf t
+ Router(config)#hostname R1 
+R1(config)#interface Loopback 0 
+R1(config-if)#ip address 192.168.1.1 255.255.255.0 
+R1(config-if)#exit
+ R1(config)#interface s1/0
+ R1(config-if)#ip address 10.1.1.1 255.255.255.252 
+R1(config-if)#no shutdown
+ *Dec 19 07:57:21.998: %LINK-3-UPDOWN: Interface Serial1/0, changed state to up
+ *Dec 19 07:57:22.999: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/0, changed state to up
+ R1(config-if)#exit
+
+ R1(config)#exit 
+ R1(config)# ip route 0.0.0.0 0.0.0.0 10.1.1.2 
+R1#show ip route
+  R1(config)#security passwords min-length 10
+ R1(config)#enable secret class12345
+ R1(config)#line console 0
+ R1(config-line)#password ciscoconpass
+ R1(config-line)#exec-timeout 5 0
+ R1(config-line)#login 
+R1(config-line)#logging synchronous
+ R1(config-line)#exit 
+R1(config)#line vty 0 4 
+R1(config-line)#password ciscovtypass
+ R1(config-line)#exec-timeout 5 0
+ R1(config-line)#login 
+R1(config-line)#exit 
+R1(config)#line aux 0
+ R1(config-line)#no exec 
+
+R1(config-line)#end 
+R1(config)#service password-encryption
+ R1(config)#banner motd $Unauthorized access strictly prohibited!$
+ R1(config)#exit Configure enhanced username password security 
+R1(config)#username JR-ADMIN secret class12345
+ R1(config)#username ADMIN secret class54321
+ R1(config)#line console 0 
+R1(config-line)#login local 
+R1(config-line)#end 
+R1(config)#line vty 0 4
+
+ R1(config-line)#login local
+ R1(config-line)#end Enabling AAA RADIUS Authentication with Local User for Backup
+ R1(config)# aaa new-model 
+R1(config)# radius server RADIUS-1
+ R1(config-radius-server)# address ipv4 192.168.1.101
+ R1(config-radius-server)# key RADIUS-1-pa55w0rd
+ R1(config-radius-server)# exit
+ R1(config)# radius server RADIUS-2
+ R1(config-radius-server)# address ipv4 192.168.1.102 
+R1(config-radius-server)# key RADIUS-2-pa55w0rd
+ R1(config-radius-server)# exit
+ R1(config)# aaa group server radius RADIUS-GROUP
+ R1(config-sg-radius)# server name RADIUS-1
+ R1(config-sg-radius)# server name RADIUS-2
+ R1(config-sg-radius)# exit
+ R1(config)# aaa authentication login default group RADIUS-GROUP local
+ R1(config)# aaa authentication login TELNET-LOGIN group RADIUS-GROUP localcase
+ R1(config)# line vty 0 4 
+R1(config-line)# login authentication TELNET-LOGIN 
+R1(config-line)# exit
+
+ R2 Router>enable 
+Router#conf t 
+ Router(config)#hostname R2
+ R2(config)#interface s1/0
+ R2(config-if)#ip address 10.1.1.2 255.255.255.252 
+R2(config-if)#no shutdown
+  R2(config)#interface s1/1 
+R2(config-if)#ip address 10.2.2.1 255.255.255.252
+ R2(config-if)#no shutdown 
+ R2(config-if)#exit
+ R2(config)#exit Configure static routes a. On R2, configure two static routes.
+ R2(config)# ip route 192.168.1.0 255.255.255.0 10.1.1.1
+ R2(config)# ip route 192.168.3.0 255.255.255.0 10.2.2.2 
+R2#show ip route 
+ R2(config)#security passwords min-length 10
+ R2(config)#enable secret class12345
+ R2(config)#line console 0 R2(config-line)#password ciscoconpass 
+R2(config-line)#exec-timeout 5 0 
+R2(config-line)#login 
+R2(config-line)#logging synchronous
+ R2(config-line)#exit
+ R2(config)#line vty 0 4
+ R2(config-line)#password ciscovtypass
+ R2(config-line)#exec-timeout 5 0 
+R2(config-line)#login
+ R2(config-line)#exit 
+R2(config)#line aux 0
+ R2(config-line)#no exec
+ R2(config-line)#end
+ R2(config)#service password-encryption 
+R2(config)#banner motd $Unauthorized access strictly prohibited!$
+ R2(config)#exit Configure enhanced username password security 
+R2(config)#username JR-ADMIN secret class12345 
+R2(config)#username ADMIN secret class54321
+ R2(config)#line console 0 
+R2(config-line)#login local
+ R2(config-line)#end
+ R2(config)#line vty 0 4 
+R2(config-line)#login local
+ R2(config-line)#end Enabling AAA RADIUS Authentication with Local User for Backup
+ R2(config)# aaa new-model 
+R2(config)# radius server RADIUS-1 
+R2(config-radius-server)# address ipv4 192.168.1.101 
+R2(config-radius-server)# key RADIUS-1-pa55w0rd
+ R2(config-radius-server)# exit 
+R2(config)# radius server RADIUS-2
+ R2(config-radius-server)# address ipv4 192.168.1.102
+ R2(config-radius-server)# key RADIUS-2-pa55w0rd 
+R2(config-radius-server)# exit R2(config)# aaa group server radius RADIUS-GROUP 
+R2(config-sg-radius)# server name RADIUS-1
+ R2(config-sg-radius)# server name RADIUS-2 
+R2(config-sg-radius)# exit 
+R2(config)# aaa authentication login default group RADIUS-GROUP local 
+R2(config)# aaa authentication login TELNET-LOGIN group RADIUS-GROUP localcase
+ R2(config)# line vty 0 4 
+R2(config-line)# login authentication TELNET-LOGIN
+ R2(config-line)# exit 
+
+R3 Router>enable
+ Router#conf t 
+Router(config)#hostname R3
+ R3(config)#interface loopback 0 
+R3(config-if)#ip address 192.168.3.1 255.255.255.0 
+R3(config-if)#exit
+ R3(config)#interface s1/0
+ R3(config-if)#ip address 10.2.2.2 255.255.255.252
+ R3(config-if)#no shutdown
+R3(config)#end Configure static routes a. On R3, configure a default static route to ISP. 
+R3(config)# ip route 0.0.0.0 0.0.0.0 10.2.2.1
+ R3#show ip route 
+ R3(config)#security passwords min-length 10
+ R3(config)#enable secret class12345 
+R3(config)#line console 0 
+R3(config-line)#password ciscoconpass 
+R3(config-line)#exec-timeout 5 0
+ R3(config-line)#login
+ R3(config-line)#logging synchronous 
+R3(config-line)#exit 
+R3(config)#line vty 0 4
+ R3(config-line)#password ciscovtypass 
+R3(config-line)#exec-timeout 5 0
+ R3(config-line)#login R3(config-line)#exit 
+R3(config)#line aux 0 
+R3(config-line)#no exec 
+R3(config-line)#end 
+R3(config)#service password-encryption
+ R3(config)#banner motd $Unauthorized access strictly prohibited!$ Configure enhanced username password security 
+R3(config)#username JR-ADMIN secret class12345 
+R3(config)#username ADMIN secret class54321
+ R3(config)#line console 0
+ R3(config-line)#login local
+ R3(config-line)#exit 
+R3(config)#line vty 0 4
+ R3(config-line)#login local
+ R3(config-line)#exit 
+R3(config)# aaa new-model
+ R3(config)# radius server RADIUS-1 
+R3(config-radius-server)# address ipv4 192.168.1.101
+ R3(config-radius-server)# key RADIUS-1-pa55w0rd
+ R3(config-radius-server)# exit
+ R3(config)# radius server RADIUS-2 
+R3(config-radius-server)# address ipv4 192.168.1.102
+ R3(config-radius-server)# key RADIUS-2-pa55w0rd 
+R3(config-radius-server)# exit
+ R3(config)# aaa group server radius RADIUS-GROUP 
+R3(config-sg-radius)# server name RADIUS-1
+ R3(config-sg-radius)# server name RADIUS-2 R3(config-sg-radius)# exit
+ R3(config)# aaa authentication login default group RADIUS-GROUP local
+ R3(config)# aaa authentication login TELNET-LOGIN group RADIUS-GROUP localcase
+ R3(config)# line vty 0 4 
+R3(config-line)# login authentication TELNET-LOGIN
+ R3(config-line)# exit 

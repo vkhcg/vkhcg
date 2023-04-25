@@ -1,0 +1,65 @@
+SanJose
+ Router>enable
+ Router#conf t
+ Router(config)#hostname SanJose 
+SanJose(config)#interface Loopback0
+ SanJose(config-if)#ip address 10.1.1.1 255.255.255.0 
+SanJose(config-if)#exit 
+SanJose(config)#interface Serial1/0 
+SanJose(config-if)#ip address 192.168.1.5 255.255.255.252 
+SanJose(config-if)#no shutdown
+ SanJose(config-if)#end 
+SanJose(config)#router bgp 100 
+SanJose(config-router)#network 10.1.1.0 mask 255.255.255.0 
+SanJose(config-router)#neighbor 192.168.1.6 remote-as 300
+ SanJose(config-router)#exit 
+SanJose#sh ip route 
+ SanJose#sh ip bgp 
+SanJose#sh ip bgp
+
+ISP Router>enable 
+Router#conf t
+ Router(config)#hostname ISP
+ ISP(config)#interface Loopback0 
+ISP(config-if)#ip address 10.2.2.1 255.255.255.0 
+ISP(config-if)#exit ISP(config)#interface Serial1/0
+ISP(config-if)#ip address 192.168.1.6 255.255.255.252 I
+SP(config-if)#no shutdown
+ ISP(config-if)#exit 
+ISP(config)#interface Serial1/1 
+ISP(config-if)#ip address 172.24.1.17 255.255.255.252
+ ISP(config-if)#no shutdown 
+ISP(config-if)#end 
+ISP(config)#router bgp 300 
+ISP(config-router)#network 10.2.2.0 mask 255.255.255.0
+ ISP(config-router)#neighbor 192.168.1.5 remote-as 100 
+ISP(config-router)#neighbor 172.24.1.18 remote-as 65000
+ ISP(config)#router bgp 300 
+ISP(config-router)#neighbor 192.168.1.5 remove-private-as
+ ISP(config-router)#end 
+ISP#clear ip bgp * soft
+ ISP(config)#ip as-path access-list 1 deny ^100$ ISP(config)#ip as-path access-list 1 permit .* 
+ISP(config)#router bgp 300 
+ISP(config-router)#neighbor 172.24.1.18 filter-list 1 out
+ ISP(config-router)#end 
+ISP#sh ip route 
+
+ ISP#show ip bgp regexp ^100$ 
+
+CustRtr
+ Router>enable
+ Router#conf t
+ Router(config)#hostname CustRtr 
+CustRtr(config)#interface Loopback0 
+CustRtr(config-if)#ip address 10.3.3.1 255.255.255.0 
+CustRtr(config-if)#exit 
+CustRtr(config)#interface Serial1/0
+ CustRtr(config-if)#ip address 172.24.1.18 255.255.255.252 
+CustRtr(config-if)#no shutdown
+ CustRtr(config-if)#end
+ CustRtr(config)#router bgp 65000
+ CustRtr(config-router)#network 10.3.3.0 mask 255.255.255.0
+ CustRtr(config-router)#neighbor 172.24.1.17 remote-as 300 
+CustRtr(config-router)#end 
+CustRtr#sh ip route
+ 
