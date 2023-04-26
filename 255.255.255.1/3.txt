@@ -1,0 +1,10 @@
+docker
+docker --version
+docker run -p 8080:8080 dotnetcoreservices/hello-world
+
+Run localhost in the browser
+
+curl http://localhost:8080/will/it/blend?
+docker ps
+docker kill <containerid> to kill replace conttid
+docker ps

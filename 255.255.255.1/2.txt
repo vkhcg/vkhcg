@@ -1,0 +1,56 @@
+dotnet new mvc --auth none
+dotnet build
+dotnet run
+
+Use the first url of the command prompt in the 
+browser and see theoutput 
+
+Go to Models Folder and create StockQuote.cs file in it.
+using System;
+namespace pracs.Models
+{
+	public class StockQuote
+	{
+		public string Symbol {get;set;}
+		public int Price{get;set;}
+	} 
+}
+
+Step 4:
+Now go to views folder and then in home folder. Edit the index.cshtml file
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    Symbol: @Model.Symbol <br/>
+	Price: $@Model.Price <br/>
+</div> 
+
+Step 5:
+Now go to controller folder and edit HomeController.cs
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using pracs2.Models;
+
+namespace pracs2.Controllers;
+
+public class HomeController : Controller
+{
+    public async Task <IActionResult> Index()
+	{
+		var model= new StockQuote{ Symbol="Nike", Price=3200};
+		return View(model);
+	}
+}
+
+dotnet build
+dotnet run
+
+Open the first url in the browser and see the output
